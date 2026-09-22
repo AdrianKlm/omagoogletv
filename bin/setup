@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+# Builds the isolated backend environment inside the user's data directory.
+# Installs nothing globally and needs no administrator rights.
+#
+# Run automatically by bin/google-tv-remote; invoking it by hand is the way to
+# repair a broken environment.
+set -euo pipefail
+
+APP_ID="omagoogletv"
+PLUGIN_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+DATA_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/$APP_ID"
+VENV_DIR="$DATA_DIR/venv"
+STAMP_FILE="$VENV_DIR/.backend-stamp"
+LOCK_FILE="$PLUGIN_DIR/requirements.lock"
+
+mkdir -p "$DATA_DIR"
+chmod 700 "$DATA_DIR"
+
+# The launcher may call setup again (after a failed attempt, say), and two
+# concurrent `pip install` runs into the same venv interleave their writes and
+# leave the environment half installed.
+exec 9>"$DATA_DIR/.setup.lock"
+if ! flock --wait 600 9; then
+    echo "Another installation is taking too long - giving up" >&2
+    exit 1
+fi
+
+# An existing bin/python is not enough: the venv links the unversioned
+# /usr/bin/python3, so after a system Python bump the directory survives but
+# site-packages (pip included) no longer matches. --clear rebuilds from zero.
+if [[ ! -x "$VENV_DIR/bin/python" ]] || ! "$VENV_DIR/bin/python" -m pip --version >/dev/null 2>&1; then
+    echo "Creating the environment in $VENV_DIR" >&2
+    python3 -m venv --clear "$VENV_DIR"
+fi
+
+# --require-hashes: the lockfile carries sha256 sums, so a swapped artifact on
+# PyPI will not install silently. The venv's pip is left alone - upgrading it
+# is another unverified download, and the bundled version is good enough.
+"$VENV_DIR/bin/python" -m pip install --quiet --require-hashes --requirement "$LOCK_FILE"
+# --no-build-isolation: by default pip builds in a separate environment and
+# pulls setuptools straight from PyPI - outside the --require-hashes check and
+# needing network where none should be required. setuptools is in the lockfile,
+# so we build with what has already been verified.
+"$VENV_DIR/bin/python" -m pip install --quiet --no-deps --no-build-isolation "$PLUGIN_DIR"
+
+backend_fingerprint() {
+    # Covers the lockfile *and* the backend source. `pip install` copies files
+    # into site-packages, so with a lockfile-only stamp an update that touched
+    # just Python code would leave the venv silently serving the old backend.
+    # Paths are relative to the plugin directory, so the value does not depend
+    # on where the plugin was installed.
+    (
+        cd "$PLUGIN_DIR" || exit 1
+        find src -name '__pycache__' -prune -o -type f -name '*.py' -print |
+            LC_ALL=C sort |
+            xargs sha256sum
+        sha256sum pyproject.toml requirements.lock
+    ) | sha256sum | cut -d' ' -f1
+}
+
+# The fingerprint lets the launcher notice that a plugin update changed the
+# dependencies or the backend source and the environment has to be rebuilt.
+backend_fingerprint > "$STAMP_FILE"
+
+echo "Done. Backend: $VENV_DIR/bin/python -m google_tv_remote.cli" >&2

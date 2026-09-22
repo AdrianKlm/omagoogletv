@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=80"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "google-tv-remote"
+version = "0.1.0"
+description = "Google TV remote backend for Omarchy (Android TV Remote Protocol v2)"
+requires-python = ">=3.12"
+dependencies = [
+    "androidtvremote2==0.3.2",
+    "zeroconf==0.151.3",
+]
+
+[project.scripts]
+google-tv-remote = "google_tv_remote.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+filterwarnings = ["error"]

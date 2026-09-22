@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "id": "omagoogletv",
+  "name": "Google TV Remote",
+  "version": "0.1.0",
+  "author": "AdrianKlm",
+  "description": "Local-network remote for Chromecast with Google TV",
+  "kinds": [
+    "bar-widget"
+  ],
+  "entryPoints": {
+    "barWidget": "Panel.qml"
+  },
+  "barWidget": {
+    "displayName": "Google TV",
+    "description": "Remote for Chromecast with Google TV",
+    "category": "Media",
+    "allowMultiple": false,
+    "defaultSection": "right"
+  }
+}

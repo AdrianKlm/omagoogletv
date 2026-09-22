@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+# The stable entry point for the QML panel.
+#
+# `omarchy plugin add` only clones files - it runs no install hooks. So it is
+# the launcher that builds the isolated environment on first run and after
+# requirements.lock changes (following `omarchy plugin update`, for instance).
+set -euo pipefail
+
+APP_ID="omagoogletv"
+PLUGIN_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+DATA_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/$APP_ID"
+VENV_PYTHON="$DATA_DIR/venv/bin/python"
+STAMP_FILE="$DATA_DIR/venv/.backend-stamp"
+LOCK_FILE="$PLUGIN_DIR/requirements.lock"
+
+# stdout is the IPC channel, so a message for the panel has to be JSON too.
+# Setup and every log line go to stderr only.
+emit_state() {
+    printf '{"event":"state","state":"%s","message":"%s"}\n' "$1" "$2"
+}
+
+backend_fingerprint() {
+    # Covers the lockfile *and* the backend source. `pip install` copies files
+    # into site-packages, so with a lockfile-only stamp an update that touched
+    # just Python code would leave the venv silently serving the old backend.
+    # Paths are relative to the plugin directory, so the value does not depend
+    # on where the plugin was installed.
+    (
+        cd "$PLUGIN_DIR" || exit 1
+        find src -name '__pycache__' -prune -o -type f -name '*.py' -print |
+            LC_ALL=C sort |
+            xargs sha256sum
+        sha256sum pyproject.toml requirements.lock
+    ) | sha256sum | cut -d' ' -f1
+}
+
+needs_setup() {
+    if [[ ! -x "$VENV_PYTHON" ]]; then
+        return 0
+    fi
+    if [[ ! -f "$STAMP_FILE" ]]; then
+        return 0
+    fi
+    if [[ "$(cat "$STAMP_FILE")" != "$(backend_fingerprint)" ]]; then
+        return 0
+    fi
+    # A functional test rather than comparing version numbers. The venv links
+    # the unversioned /usr/bin/python3, so after a system Python bump the
+    # interpreter looks for site-packages of the new version and finds nothing.
+    # The symlink stays executable and the lockfile is unchanged - none of the
+    # other checks would notice.
+    if ! "$VENV_PYTHON" -c "import google_tv_remote" >/dev/null 2>&1; then
+        echo "The environment does not work with the current Python - rebuilding" >&2
+        return 0
+    fi
+    return 1
+}
+
+if needs_setup; then
+    emit_state "connecting" "First run - installing dependencies..."
+    if ! "$PLUGIN_DIR/bin/setup" >&2; then
+        emit_state "error" "Could not install dependencies - check the network and run bin/setup"
+        exit 1
+    fi
+fi
+
+exec "$VENV_PYTHON" -m google_tv_remote.cli "$@"
