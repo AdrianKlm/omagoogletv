@@ -124,7 +124,16 @@ untouched.
 
 None of it reaches the repository.
 
-## Removing all data
+## Removing the plugin
+
+```bash
+omarchy plugin remove omagoogletv
+```
+
+That disables the widget, unloads it from the shell and deletes the plugin
+directory. It leaves your data behind, so a later reinstall keeps the pairing.
+
+To remove everything, including the Python environment and the pairing:
 
 ```bash
 rm -rf ~/.local/share/omagoogletv
@@ -132,7 +141,8 @@ rm -rf ~/.local/state/omagoogletv
 ```
 
 Deleting `credentials/` invalidates the pairing — the next connection asks for
-a PIN again.
+a PIN again. Nothing is left anywhere else: the plugin writes only to those two
+directories and never touches your configuration.
 
 ## Updating
 
@@ -168,6 +178,26 @@ omarchy plugin validate .
 The unit tests use a device stand-in. Pairing, keys, volume and reconnecting
 need a test against real hardware — see `docs/spike-results.md`.
 
-## License
+## License and dependencies
 
-MIT — see [LICENSE](LICENSE).
+This plugin is MIT licensed — see [LICENSE](LICENSE).
+
+The panel itself needs nothing beyond the Omarchy shell. The backend pulls
+these Python packages, pinned with checksums in `requirements.lock` and
+installed only into its own environment under `~/.local/share/omagoogletv/`:
+
+| Package | Version | License |
+|---|---|---|
+| [androidtvremote2](https://pypi.org/project/androidtvremote2/) | 0.3.2 | Apache-2.0 |
+| [zeroconf](https://pypi.org/project/zeroconf/) | 0.151.3 | LGPL-2.1-or-later |
+| [cryptography](https://pypi.org/project/cryptography/) | 50.0.1 | Apache-2.0 OR BSD-3-Clause |
+| [protobuf](https://pypi.org/project/protobuf/) | 7.36.2 | BSD-3-Clause |
+| [cffi](https://pypi.org/project/cffi/) | 2.1.1 | MIT-0 |
+| [pycparser](https://pypi.org/project/pycparser/) | 3.0 | BSD-3-Clause |
+| [aiofiles](https://pypi.org/project/aiofiles/) | 25.1.0 | Apache-2.0 |
+| [ifaddr](https://pypi.org/project/ifaddr/) | 0.2.0 | MIT |
+| [setuptools](https://pypi.org/project/setuptools/) | 84.0.0 | MIT (build only) |
+
+They are fetched from PyPI once, on the first run, and every artifact is
+verified against the sha256 sums in `requirements.lock`. Nothing is installed
+globally and no `sudo` is used.
