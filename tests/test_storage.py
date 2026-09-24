@@ -26,8 +26,8 @@ def test_uses_xdg_variables(tmp_path, monkeypatch):
     monkeypatch.setenv("XDG_DATA_HOME", str(tmp_path / "d"))
     monkeypatch.setenv("XDG_STATE_HOME", str(tmp_path / "s"))
     s = Storage()
-    assert s.credentials_dir == tmp_path / "d" / "omagoogletv" / "credentials"
-    assert s.state_file == tmp_path / "s" / "omagoogletv" / "state.json"
+    assert s.credentials_dir == tmp_path / "d" / "io.github.adrianklm.omagoogletv" / "credentials"
+    assert s.state_file == tmp_path / "s" / "io.github.adrianklm.omagoogletv" / "state.json"
 
 
 def test_falls_back_to_default_paths_without_xdg(tmp_path, monkeypatch):
@@ -35,14 +35,14 @@ def test_falls_back_to_default_paths_without_xdg(tmp_path, monkeypatch):
     monkeypatch.delenv("XDG_STATE_HOME", raising=False)
     monkeypatch.setenv("HOME", str(tmp_path))
     s = Storage()
-    assert s.credentials_dir == tmp_path / ".local/share/omagoogletv/credentials"
-    assert s.state_file == tmp_path / ".local/state/omagoogletv/state.json"
+    assert s.credentials_dir == tmp_path / ".local/share/io.github.adrianklm.omagoogletv/credentials"
+    assert s.state_file == tmp_path / ".local/state/io.github.adrianklm.omagoogletv/state.json"
 
 
 def test_ignores_empty_xdg(tmp_path, monkeypatch):
     monkeypatch.setenv("XDG_DATA_HOME", "")
     monkeypatch.setenv("HOME", str(tmp_path))
-    assert Storage().data_dir == tmp_path / ".local/share/omagoogletv"
+    assert Storage().data_dir == tmp_path / ".local/share/io.github.adrianklm.omagoogletv"
 
 
 def test_certificate_and_key_live_in_the_credentials_directory(storage):

@@ -14,7 +14,7 @@ from typing import Any
 
 from .messages import ProtocolError, require_local_host
 
-APP_ID = "omagoogletv"
+APP_ID = "io.github.adrianklm.omagoogletv"
 
 _DIR_MODE = 0o700
 _FILE_MODE = 0o600

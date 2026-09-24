@@ -246,7 +246,7 @@ async def test_the_internal_error_message_leaks_no_details(backend):
     b, output, _, _ = backend
 
     async def explode(**kwargs):
-        raise RuntimeError("/home/someone/.local/share/omagoogletv/key.pem")
+        raise RuntimeError("/home/someone/.local/share/io.github.adrianklm.omagoogletv/key.pem")
 
     b._discover = explode
     await send(b, id=1, action="discover")

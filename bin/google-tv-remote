@@ -6,7 +6,7 @@
 # requirements.lock changes (following `omarchy plugin update`, for instance).
 set -euo pipefail
 
-APP_ID="omagoogletv"
+APP_ID="io.github.adrianklm.omagoogletv"
 PLUGIN_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 DATA_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/$APP_ID"
 VENV_PYTHON="$DATA_DIR/venv/bin/python"

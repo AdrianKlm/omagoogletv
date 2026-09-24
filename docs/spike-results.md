@@ -121,7 +121,7 @@ The process was stopped and started again three times. Every time
 `async_connect()` succeeded **without asking for a PIN again**, in 134–205 ms,
 with a correct initial state (`is_on`, `current_app`, `volume_info`).
 
-Certificate and key: `~/.local/share/omagoogletv/credentials/{cert.pem,key.pem}`,
+Certificate and key: `~/.local/share/io.github.adrianklm.omagoogletv/credentials/{cert.pem,key.pem}`,
 mode `0600`, directories `0700`. Kept out of the repository; `.gitignore`
 additionally blocks `credentials/`, `*.pem`, `*.key`, `*.crt`, `state.json`.
 

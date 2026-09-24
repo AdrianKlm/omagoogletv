@@ -11,8 +11,8 @@ import "components"
 // into QML properties.
 Panel {
   id: root
-  moduleName: "omagoogletv"
-  ipcTarget: "omagoogletv"
+  moduleName: "io.github.adrianklm.omagoogletv"
+  ipcTarget: "io.github.adrianklm.omagoogletv"
 
   readonly property string stateIcon: {
     if (root.remote.pairing) return "󰌆"

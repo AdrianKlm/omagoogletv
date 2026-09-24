@@ -14,12 +14,12 @@ ADB, no Google account, no cloud service. Everything stays on the local network.
 
 ```bash
 omarchy plugin add https://github.com/AdrianKlm/omagoogletv.git
-omarchy plugin enable omagoogletv right
+omarchy plugin enable io.github.adrianklm.omagoogletv right
 ```
 
 That is the whole thing. The Python backend installs itself: the first time you
 click the icon, the launcher builds an isolated environment in
-`~/.local/share/omagoogletv/venv/` and the panel shows "First run — installing
+`~/.local/share/io.github.adrianklm.omagoogletv/venv/` and the panel shows "First run — installing
 dependencies…" for a few seconds. Nothing lands outside your home directory,
 nothing is installed globally and no `sudo` is involved.
 
@@ -34,9 +34,9 @@ dependencies change or the system Python is upgraded.
 ### From a local checkout
 
 ```bash
-ln -s "$PWD" ~/.config/omarchy/plugins/omagoogletv
+ln -s "$PWD" ~/.config/omarchy/plugins/io.github.adrianklm.omagoogletv
 omarchy-shell shell rescanPlugins
-omarchy plugin enable omagoogletv right
+omarchy plugin enable io.github.adrianklm.omagoogletv right
 ```
 
 ## Using the panel
@@ -118,16 +118,16 @@ untouched.
 
 | What | Where | Mode |
 |---|---|---|
-| Python environment | `~/.local/share/omagoogletv/venv/` | inside a 0700 directory |
-| certificate and key | `~/.local/share/omagoogletv/credentials/` | 0600 |
-| remembered device (host, name, MAC) | `~/.local/state/omagoogletv/state.json` | 0600 |
+| Python environment | `~/.local/share/io.github.adrianklm.omagoogletv/venv/` | inside a 0700 directory |
+| certificate and key | `~/.local/share/io.github.adrianklm.omagoogletv/credentials/` | 0600 |
+| remembered device (host, name, MAC) | `~/.local/state/io.github.adrianklm.omagoogletv/state.json` | 0600 |
 
 None of it reaches the repository.
 
 ## Removing the plugin
 
 ```bash
-omarchy plugin remove omagoogletv
+omarchy plugin remove io.github.adrianklm.omagoogletv
 ```
 
 That disables the widget, unloads it from the shell and deletes the plugin
@@ -136,8 +136,8 @@ directory. It leaves your data behind, so a later reinstall keeps the pairing.
 To remove everything, including the Python environment and the pairing:
 
 ```bash
-rm -rf ~/.local/share/omagoogletv
-rm -rf ~/.local/state/omagoogletv
+rm -rf ~/.local/share/io.github.adrianklm.omagoogletv
+rm -rf ~/.local/state/io.github.adrianklm.omagoogletv
 ```
 
 Deleting `credentials/` invalidates the pairing — the next connection asks for
@@ -184,7 +184,7 @@ This plugin is MIT licensed — see [LICENSE](LICENSE).
 
 The panel itself needs nothing beyond the Omarchy shell. The backend pulls
 these Python packages, pinned with checksums in `requirements.lock` and
-installed only into its own environment under `~/.local/share/omagoogletv/`:
+installed only into its own environment under `~/.local/share/io.github.adrianklm.omagoogletv/`:
 
 | Package | Version | License |
 |---|---|---|

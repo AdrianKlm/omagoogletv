@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "id": "omagoogletv",
+  "id": "io.github.adrianklm.omagoogletv",
   "name": "Google TV Remote",
   "version": "0.1.0",
   "author": "AdrianKlm",
