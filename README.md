@@ -21,7 +21,7 @@ That is the whole thing. The Python backend installs itself: the first time you
 click the icon, the launcher builds an isolated environment in
 `~/.local/share/io.github.adrianklm.omagoogletv/venv/` and the panel shows "First run — installing
 dependencies…" for a few seconds. Nothing lands outside your home directory,
-nothing is installed globally and no `sudo` is involved.
+nothing is installed globally and no administrator rights are needed.
 
 The only moment a network connection is needed is that first build, which pulls
 the pinned dependencies from PyPI. Every one of them is verified against the
@@ -200,4 +200,4 @@ installed only into its own environment under `~/.local/share/io.github.adriankl
 
 They are fetched from PyPI once, on the first run, and every artifact is
 verified against the sha256 sums in `requirements.lock`. Nothing is installed
-globally and no `sudo` is used.
+globally and no administrator rights are needed.

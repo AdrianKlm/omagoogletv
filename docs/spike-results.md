@@ -17,7 +17,7 @@ Result: **GO**
 Transitive dependencies: `aiofiles==25.1.0`, `cffi==2.1.1`, `cryptography==50.0.1`,
 `ifaddr==0.2.0`, `protobuf==7.36.2`, `pycparser==3.0`.
 
-Everything was installed into a local `.venv/`. No `sudo`, no global install.
+Everything was installed into a local `.venv/`. No administrator rights, no global install.
 
 ## 2. Discovering the device
 
